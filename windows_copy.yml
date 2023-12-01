@@ -1,0 +1,25 @@
+# Test connectivity to a windows host
+# ansible winserver -m ansible.windows.win_ping
+---
+- name: Hello World!
+  hosts: all
+ 
+  tasks:
+  
+    - name: Obtain information about a folder
+      ansible.windows.win_stat:
+        path: E:\eCommerce\eCommerce_WEBSite
+      register: folder_info
+
+    - name: Imprimir resultado
+      debug: 
+        var: folder_info.stat.exists
+
+    - name: Copiar archivos a AWS S3
+      aws_s3_sync:
+        bucket: "{{ lookup('env', 'AWS_BUCKET') }}"
+        src: "{{ lookup('env', 'FOLDER') }}"
+        region: us-east-1
+      vars:
+        AWS_ACCESS_KEY_ID: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+        AWS_SECRET_ACCESS_KEY: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
