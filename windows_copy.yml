@@ -15,11 +15,13 @@
       debug: 
         var: folder_info.stat.exists
 
-    - name: Copiar archivos a AWS S3
-      community.aws.s3_sync:
+    - name: Subir archivos a AWS S3
+      amazon.aws.s3_object:
         bucket: "{{ lookup('env', 'AWS_BUCKET') }}"
+        object: "{{ item.path | regex_replace('\\\\', '/') | regex_replace('^.*/', '') }}"
         src: "{{ lookup('env', 'FOLDER') }}"
         region: us-east-1
+      with_items: "{{ archivos_encontrados.files }}"
       vars:
         AWS_ACCESS_KEY_ID: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
         AWS_SECRET_ACCESS_KEY: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
